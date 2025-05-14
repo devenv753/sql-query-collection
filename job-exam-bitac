@@ -1,0 +1,111 @@
+## Q: For all departments, find the number of employees who earn more than 25,000 in salary.
+
+SELECT 
+    d.Department_Name,
+    COUNT(e.Employee_ID) AS Number_of_Employees
+FROM Employees e
+JOIN Departments d ON e.Department_ID = d.Department_ID
+WHERE e.Salary > 25000
+GROUP BY d.Department_Name;
+
+
+## Joining Example
+
+SELECT
+    e.Employee_ID,
+    e.First_Name,
+    e.Last_Name,
+    e.Email,
+    e.Phone_Number,
+    e.Salary,
+    j.Job_Title,
+    d.Department_Name,
+    l.City,
+    c.Country_Name,
+    r.Region_Name
+FROM Employees e
+JOIN Jobs j ON e.Job_ID = j.Job_ID
+JOIN Departments d ON e.Department_ID = d.Department_ID
+JOIN Locations l ON d.Location_ID = l.Location_ID
+JOIN Countries c ON l.Country_ID = c.Country_ID
+JOIN Regions r ON c.Region_ID = r.Region_ID;
+
+## Related Tables
+
+CREATE TABLE Regions (
+    Region_ID INT PRIMARY KEY,
+    Region_Name VARCHAR(100)
+);
+
+
+CREATE TABLE Countries (
+    Country_ID INT PRIMARY KEY,
+    Country_Name VARCHAR(100),
+    Region_ID INT,
+    FOREIGN KEY (Region_ID) REFERENCES Regions(Region_ID)
+);
+
+
+CREATE TABLE Locations (
+    Location_ID INT PRIMARY KEY,
+    Street_Address VARCHAR(200),
+    City VARCHAR(100),
+    State_Province VARCHAR(100),
+    Post_Code VARCHAR(20),
+    Country_ID INT,
+    FOREIGN KEY (Country_ID) REFERENCES Countries(Country_ID)
+);
+
+
+CREATE TABLE Departments (
+    Department_ID INT PRIMARY KEY,
+    Department_Name VARCHAR(100),
+    Manager_ID INT,
+    Location_ID INT,
+    FOREIGN KEY (Location_ID) REFERENCES Locations(Location_ID)
+    -- Manager_ID later reference korbe Employees(Employee_ID)
+);
+
+
+CREATE TABLE Jobs (
+    Job_ID INT PRIMARY KEY,
+    Job_Title VARCHAR(100),
+    Min_Salary DECIMAL(10,2),
+    Max_Salary DECIMAL(10,2)
+);
+
+
+CREATE TABLE Employees (
+    Employee_ID INT PRIMARY KEY,
+    First_Name VARCHAR(50),
+    Last_Name VARCHAR(50),
+    Email VARCHAR(100),
+    Phone_Number VARCHAR(20),
+    Hire_Date DATE,
+    Job_ID INT,
+    Salary DECIMAL(10,2),
+    Commission_PCT DECIMAL(5,2),
+    Manager_ID INT,
+    Department_ID INT,
+    FOREIGN KEY (Job_ID) REFERENCES Jobs(Job_ID),
+    FOREIGN KEY (Manager_ID) REFERENCES Employees(Employee_ID),
+    FOREIGN KEY (Department_ID) REFERENCES Departments(Department_ID)
+);
+
+
+CREATE TABLE Job_History (
+    Employee_ID INT,
+    Start_Date DATE,
+    End_Date DATE,
+    Job_ID INT,
+    Department_ID INT,
+    PRIMARY KEY (Employee_ID, Start_Date),
+    FOREIGN KEY (Employee_ID) REFERENCES Employees(Employee_ID),
+    FOREIGN KEY (Job_ID) REFERENCES Jobs(Job_ID),
+    FOREIGN KEY (Department_ID) REFERENCES Departments(Department_ID)
+);
+
+
+
+
+
